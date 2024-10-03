@@ -365,6 +365,7 @@ display: none;
 <pre><code>## The following objects are masked from &#39;package:base&#39;:
 ## 
 ##     intersect, setdiff, setequal, union</code></pre>
+<pre class="r"><code>library(readxl)</code></pre>
 <p>Problem 1 import data</p>
 <pre class="r"><code>nyc_data &lt;- read.csv(&quot;D:/P8105/p8105_hw2_tt3022/Data/NYC_Transit_Subway_Entrance_And_Exit_Data.csv&quot;)</code></pre>
 <p>Cleaning Data</p>
@@ -443,6 +444,43 @@ ada_a_train_stations</code></pre>
 <p>Basic on the code, we find that we have 465 distinct stations, 84 ADA
 stations, 0.6666667 of station entrances / exits without vending allow
 entrance, 60 route A stations, and 17 stations has APA in route A.</p>
+<p>Problem 2: loading dataset:</p>
+<pre class="r"><code>file_path &lt;- &quot;D:/P8105/p8105_hw2_tt3022/Data/202409 Trash Wheel Collection Data.xlsx&quot;
+mr_trash_wheel &lt;- read_excel(file_path, sheet = &quot;Mr. Trash Wheel&quot;, skip = 1)</code></pre>
+<pre><code>## New names:
+## • `` -&gt; `...15`
+## • `` -&gt; `...16`</code></pre>
+<pre class="r"><code>prof_trash_wheel &lt;- read_excel(file_path, sheet = &quot;Professor Trash Wheel&quot;, skip = 1)
+gwynnda_trash_wheel &lt;- read_excel(file_path, sheet = &quot;Gwynnda Trash Wheel&quot;, skip = 1)</code></pre>
+<p>Cleaning Dataset</p>
+<p>we rename the variable names, delete the row that do not include
+dumpster-specific data and round the number of sports balls to the
+nearest integer and converts the result to an integer variable</p>
+<pre class="r"><code>colnames(mr_trash_wheel) &lt;- c(&quot;Dumpster&quot;, &quot;Month&quot;, &quot;Year&quot;, &quot;Date&quot;, &quot;Weight_Tons&quot;, 
+                              &quot;Volume_Cubic_Yards&quot;, &quot;Plastic_Bottles&quot;, &quot;Polystyrene&quot;, 
+                              &quot;Cigarette_Butts&quot;, &quot;Glass_Bottles&quot;, &quot;Plastic_Bags&quot;, 
+                              &quot;Wrappers&quot;, &quot;Sports_Balls&quot;, &quot;Homes_Powered&quot;)
+mr_trash_wheel &lt;- mr_trash_wheel[, 1:14]
+mr_trash_wheel$Sports_Balls &lt;- as.integer(round(mr_trash_wheel$Sports_Balls, 0))
+mr_trash_wheel &lt;- mr_trash_wheel[!is.na(mr_trash_wheel$Dumpster) &amp; !is.na(as.numeric(mr_trash_wheel$Dumpster)), ]
+
+
+prof_trash_wheel &lt;- read_excel(file_path, sheet = &quot;Professor Trash Wheel&quot;, skip = 1)
+colnames(prof_trash_wheel) &lt;- c(&quot;Dumpster&quot;, &quot;Month&quot;, &quot;Year&quot;, &quot;Date&quot;, &quot;Weight_Tons&quot;, 
+                                &quot;Volume_Cubic_Yards&quot;, &quot;Plastic_Bottles&quot;, &quot;Polystyrene&quot;, 
+                                &quot;Cigarette_Butts&quot;, &quot;Glass_Bottles&quot;, &quot;Plastic_Bags&quot;, 
+                                &quot;Wrappers&quot;, &quot;Homes_Powered&quot;)
+prof_trash_wheel &lt;- prof_trash_wheel[, 1:13]
+prof_trash_wheel &lt;- prof_trash_wheel[!is.na(prof_trash_wheel$Dumpster) &amp; !is.na(as.numeric(prof_trash_wheel$Dumpster)), ]
+
+
+
+gwynnda_trash_wheel &lt;- read_excel(file_path, sheet = &quot;Gwynnda Trash Wheel&quot;, skip = 1)
+colnames(gwynnda_trash_wheel) &lt;- c(&quot;Dumpster&quot;, &quot;Month&quot;, &quot;Year&quot;, &quot;Date&quot;, &quot;Weight_Tons&quot;, 
+                                   &quot;Volume_Cubic_Yards&quot;, &quot;Plastic_Bottles&quot;, &quot;Polystyrene&quot;, 
+                                   &quot;Cigarette_Butts&quot;, &quot;Plastic_Bags&quot;, &quot;Wrappers&quot;, &quot;Homes_Powered&quot;)
+gwynnda_trash_wheel &lt;- gwynnda_trash_wheel[, 1:12]
+gwynnda_trash_wheel &lt;- gwynnda_trash_wheel[!is.na(gwynnda_trash_wheel$Dumpster) &amp; !is.na(as.numeric(gwynnda_trash_wheel$Dumpster)), ]</code></pre>
 
 
 

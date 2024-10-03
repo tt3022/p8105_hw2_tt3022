@@ -6,6 +6,7 @@ date: "2024-10-02"
 Load the necessary libraries
 ```{r}
 library(dplyr)
+library(readxl)
 ```
 
 Problem 1
@@ -91,5 +92,65 @@ ada_a_train_stations
 
 ```
 Basic on  the code, we find that we have 465 distinct stations, 84 ADA stations, `r prop_entry_no_vending`  of station entrances / exits without vending allow entrance, 60 route A stations, and 17 stations has APA in route A.
+
+
+
+
+Problem 2:
+loading dataset:
+```{r}
+file_path <- "D:/P8105/p8105_hw2_tt3022/Data/202409 Trash Wheel Collection Data.xlsx"
+mr_trash_wheel <- read_excel(file_path, sheet = "Mr. Trash Wheel", skip = 1)
+prof_trash_wheel <- read_excel(file_path, sheet = "Professor Trash Wheel", skip = 1)
+gwynnda_trash_wheel <- read_excel(file_path, sheet = "Gwynnda Trash Wheel", skip = 1)
+```
+
+
+Cleaning Dataset
+
+we rename the variable names, delete the row that do not include dumpster-specific data and round the number of sports balls to the nearest integer and converts the result to an integer variable 
+
+
+```{r}
+colnames(mr_trash_wheel) <- c("Dumpster", "Month", "Year", "Date", "Weight_Tons", 
+                              "Volume_Cubic_Yards", "Plastic_Bottles", "Polystyrene", 
+                              "Cigarette_Butts", "Glass_Bottles", "Plastic_Bags", 
+                              "Wrappers", "Sports_Balls", "Homes_Powered")
+mr_trash_wheel <- mr_trash_wheel[, 1:14]
+mr_trash_wheel$Sports_Balls <- as.integer(round(mr_trash_wheel$Sports_Balls, 0))
+mr_trash_wheel <- mr_trash_wheel[!is.na(mr_trash_wheel$Dumpster) & !is.na(as.numeric(mr_trash_wheel$Dumpster)), ]
+
+
+prof_trash_wheel <- read_excel(file_path, sheet = "Professor Trash Wheel", skip = 1)
+colnames(prof_trash_wheel) <- c("Dumpster", "Month", "Year", "Date", "Weight_Tons", 
+                                "Volume_Cubic_Yards", "Plastic_Bottles", "Polystyrene", 
+                                "Cigarette_Butts", "Glass_Bottles", "Plastic_Bags", 
+                                "Wrappers", "Homes_Powered")
+prof_trash_wheel <- prof_trash_wheel[, 1:13]
+prof_trash_wheel <- prof_trash_wheel[!is.na(prof_trash_wheel$Dumpster) & !is.na(as.numeric(prof_trash_wheel$Dumpster)), ]
+
+
+
+gwynnda_trash_wheel <- read_excel(file_path, sheet = "Gwynnda Trash Wheel", skip = 1)
+colnames(gwynnda_trash_wheel) <- c("Dumpster", "Month", "Year", "Date", "Weight_Tons", 
+                                   "Volume_Cubic_Yards", "Plastic_Bottles", "Polystyrene", 
+                                   "Cigarette_Butts", "Plastic_Bags", "Wrappers", "Homes_Powered")
+gwynnda_trash_wheel <- gwynnda_trash_wheel[, 1:12]
+gwynnda_trash_wheel <- gwynnda_trash_wheel[!is.na(gwynnda_trash_wheel$Dumpster) & !is.na(as.numeric(gwynnda_trash_wheel$Dumpster)), ]
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
