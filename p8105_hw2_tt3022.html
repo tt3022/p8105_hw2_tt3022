@@ -365,7 +365,8 @@ display: none;
 <pre><code>## The following objects are masked from &#39;package:base&#39;:
 ## 
 ##     intersect, setdiff, setequal, union</code></pre>
-<pre class="r"><code>library(readxl)</code></pre>
+<pre class="r"><code>library(readxl)
+library(stringr)</code></pre>
 <p>Problem 1 import data</p>
 <pre class="r"><code>nyc_data &lt;- read.csv(&quot;D:/P8105/p8105_hw2_tt3022/Data/NYC_Transit_Subway_Entrance_And_Exit_Data.csv&quot;)</code></pre>
 <p>Cleaning Data</p>
@@ -518,7 +519,60 @@ tons of trash. Furthermore, Gwynnda Trash Wheel collected 18,120
 cigarette butts in June 2022. These variables and measurements provide a
 detailed view of the efforts to reduce waste in the environment through
 these trash collection systems.</p>
-<p>Problem 3</p>
+<p>Problem 3 import data</p>
+<pre class="r"><code>bakers_df = read.csv(&quot;D:/P8105/p8105_hw2_tt3022/Data/gbb_datasets/bakers.csv&quot;)
+bakes_df = read.csv(&quot;D:/P8105/p8105_hw2_tt3022/Data/gbb_datasets/bakes.csv&quot;)
+results_df = read.csv(&quot;D:/P8105/p8105_hw2_tt3022/Data/gbb_datasets/results.csv&quot;,skip = 2)
+viewers_df = read.csv(&quot;D:/P8105/p8105_hw2_tt3022/Data/gbb_datasets/viewers.csv&quot;)</code></pre>
+<p>cleaning data from name, and adding the first name in bakers_df</p>
+<pre class="r"><code>bakers_df=janitor::clean_names(bakers_df)
+bakes_df = janitor::clean_names(bakes_df)
+results_df = janitor::clean_names(results_df)
+viewers_df =janitor::clean_names(viewers_df)
+bakers_df$baker &lt;- word(bakers_df$baker_name, 1)</code></pre>
+<p>I realize that some bakers are join the show multiple time so we need
+merge result and bakes first by series, episode, then baker.</p>
+<p>Then order them by series, episode, baker.</p>
+<pre class="r"><code>merged_bakes_results &lt;- merge(results_df,bakes_df,
+                              by = c(&quot;series&quot;, &quot;episode&quot;, &quot;baker&quot;), 
+                              all.x = TRUE)
+final_dataset &lt;- merge(merged_bakes_results, bakers_df, 
+                       by = c(&quot;series&quot;,&quot;baker&quot;), 
+                       all.x = TRUE)
+final_dataset &lt;- final_dataset %&gt;% 
+  select(series, episode, everything()) 
+final_dataset &lt;- final_dataset %&gt;% 
+  arrange(series, episode, baker)</code></pre>
+<p>export the data</p>
+<pre class="r"><code># Export the cleaned dataset as a CSV in the same directory as the original datasets
+write.csv(final_dataset, 
+          &quot;D:/P8105/p8105_hw2_tt3022/Data/gbb_datasets/final_cleaned_data.csv&quot;, 
+          row.names = FALSE)</code></pre>
+<p>Filter for Seasons 5 through 10 and select only the rows where
+‘result’ indicates ‘Star Baker’ or ‘Winner’</p>
+<pre class="r"><code>star_baker_table &lt;- final_dataset %&gt;%
+  filter(series &gt;= 5 &amp; series &lt;= 10, result %in% c(&quot;STAR BAKER&quot;, &quot;WINNER&quot;)) %&gt;%
+  select(series, episode, baker, result) %&gt;%
+  arrange(series, episode)</code></pre>
+<p>I find that the most winner has been star baker before. Some of them
+get star baker very frequently, but in series 10, I am surprises that
+David is the winner, because he did not become star baker before.</p>
+<p>To finished the viewer</p>
+<pre class="r"><code>average_viewership_s1 &lt;- viewers_df %&gt;%
+  summarize(average_s1 = mean(series_1, na.rm = TRUE)) %&gt;%
+  pull(average_s1)  
+
+
+average_viewership_s5 &lt;- viewers_df %&gt;%
+  summarize(average_s5 = mean(series_5, na.rm = TRUE)) %&gt;%
+  pull(average_s5)  
+
+average_viewership_s1</code></pre>
+<pre><code>## [1] 2.77</code></pre>
+<pre class="r"><code>average_viewership_s5</code></pre>
+<pre><code>## [1] 10.0393</code></pre>
+<p>We finally find that average viewership in Season 1 is 2.77 and in
+Season 5 is 10.0393.</p>
 
 
 
