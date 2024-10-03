@@ -463,6 +463,8 @@ nearest integer and converts the result to an integer variable</p>
 mr_trash_wheel &lt;- mr_trash_wheel[, 1:14]
 mr_trash_wheel$Sports_Balls &lt;- as.integer(round(mr_trash_wheel$Sports_Balls, 0))
 mr_trash_wheel &lt;- mr_trash_wheel[!is.na(mr_trash_wheel$Dumpster) &amp; !is.na(as.numeric(mr_trash_wheel$Dumpster)), ]
+mr_trash_wheel$Trash_Wheel &lt;- &quot;Mr. Trash Wheel&quot;
+
 
 
 prof_trash_wheel &lt;- read_excel(file_path, sheet = &quot;Professor Trash Wheel&quot;, skip = 1)
@@ -472,15 +474,51 @@ colnames(prof_trash_wheel) &lt;- c(&quot;Dumpster&quot;, &quot;Month&quot;, &quo
                                 &quot;Wrappers&quot;, &quot;Homes_Powered&quot;)
 prof_trash_wheel &lt;- prof_trash_wheel[, 1:13]
 prof_trash_wheel &lt;- prof_trash_wheel[!is.na(prof_trash_wheel$Dumpster) &amp; !is.na(as.numeric(prof_trash_wheel$Dumpster)), ]
-
-
+prof_trash_wheel$Trash_Wheel &lt;- &quot;Professor Trash Wheel&quot; 
+prof_trash_wheel$Sports_Balls &lt;- NA
 
 gwynnda_trash_wheel &lt;- read_excel(file_path, sheet = &quot;Gwynnda Trash Wheel&quot;, skip = 1)
 colnames(gwynnda_trash_wheel) &lt;- c(&quot;Dumpster&quot;, &quot;Month&quot;, &quot;Year&quot;, &quot;Date&quot;, &quot;Weight_Tons&quot;, 
                                    &quot;Volume_Cubic_Yards&quot;, &quot;Plastic_Bottles&quot;, &quot;Polystyrene&quot;, 
                                    &quot;Cigarette_Butts&quot;, &quot;Plastic_Bags&quot;, &quot;Wrappers&quot;, &quot;Homes_Powered&quot;)
 gwynnda_trash_wheel &lt;- gwynnda_trash_wheel[, 1:12]
-gwynnda_trash_wheel &lt;- gwynnda_trash_wheel[!is.na(gwynnda_trash_wheel$Dumpster) &amp; !is.na(as.numeric(gwynnda_trash_wheel$Dumpster)), ]</code></pre>
+gwynnda_trash_wheel &lt;- gwynnda_trash_wheel[!is.na(gwynnda_trash_wheel$Dumpster) &amp; !is.na(as.numeric(gwynnda_trash_wheel$Dumpster)), ]
+gwynnda_trash_wheel$Trash_Wheel &lt;- &quot;Gwynnda Trash Wheel&quot; # Adding identifier
+gwynnda_trash_wheel$Glass_Bottles &lt;- NA
+gwynnda_trash_wheel$Sports_Balls &lt;- NA</code></pre>
+<p>Combining the three datasets into one</p>
+<pre class="r"><code>combined_trash_data &lt;- rbind(mr_trash_wheel, prof_trash_wheel, gwynnda_trash_wheel)
+num_observations &lt;- nrow(combined_trash_data)
+total_weight_prof_trash &lt;- sum(combined_trash_data$Weight_Tons[combined_trash_data$Trash_Wheel == &quot;Professor Trash Wheel&quot;], na.rm = TRUE)
+
+# Calculating the total number of cigarette butts collected by Gwynnda in June 2022
+total_cigarette_butts_gwynnda &lt;- sum(combined_trash_data$Cigarette_Butts[combined_trash_data$Trash_Wheel == &quot;Gwynnda Trash Wheel&quot; &amp; 
+                                                                         combined_trash_data$Month == &quot;June&quot; &amp; 
+                                                                         combined_trash_data$Year == 2022], na.rm = TRUE)
+
+# Displaying the calculated results
+num_observations</code></pre>
+<pre><code>## [1] 1033</code></pre>
+<pre class="r"><code>total_weight_prof_trash</code></pre>
+<pre><code>## [1] 246.74</code></pre>
+<pre class="r"><code>total_cigarette_butts_gwynnda</code></pre>
+<pre><code>## [1] 18120</code></pre>
+<p>The combined dataset consists of 1,033 observations from three
+sources: Mr. Trash Wheel, Professor Trash Wheel, and Gwynnda Trash
+Wheel. key variables:</p>
+<p>Weight_Tons: The total weight of trash collected in tons.
+Cigarette_Butts: The number of cigarette butts collected.
+Plastic_Bottles, Polystyrene, Plastic_Bags, Wrappers, and Sports_Balls:
+Various types of waste materials. Glass_Bottles: Recorded for Mr. Trash
+Wheel and Professor Trash Wheel but not for Gwynnda. Homes_Powered: The
+amount of energy (in terms of homes powered) from the collected
+waste.</p>
+<p>In this dataset, Professor Trash Wheel collected a total of 246.74
+tons of trash. Furthermore, Gwynnda Trash Wheel collected 18,120
+cigarette butts in June 2022. These variables and measurements provide a
+detailed view of the efforts to reduce waste in the environment through
+these trash collection systems.</p>
+<p>Problem 3</p>
 
 
 

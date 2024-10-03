@@ -119,6 +119,8 @@ colnames(mr_trash_wheel) <- c("Dumpster", "Month", "Year", "Date", "Weight_Tons"
 mr_trash_wheel <- mr_trash_wheel[, 1:14]
 mr_trash_wheel$Sports_Balls <- as.integer(round(mr_trash_wheel$Sports_Balls, 0))
 mr_trash_wheel <- mr_trash_wheel[!is.na(mr_trash_wheel$Dumpster) & !is.na(as.numeric(mr_trash_wheel$Dumpster)), ]
+mr_trash_wheel$Trash_Wheel <- "Mr. Trash Wheel"
+
 
 
 prof_trash_wheel <- read_excel(file_path, sheet = "Professor Trash Wheel", skip = 1)
@@ -128,8 +130,8 @@ colnames(prof_trash_wheel) <- c("Dumpster", "Month", "Year", "Date", "Weight_Ton
                                 "Wrappers", "Homes_Powered")
 prof_trash_wheel <- prof_trash_wheel[, 1:13]
 prof_trash_wheel <- prof_trash_wheel[!is.na(prof_trash_wheel$Dumpster) & !is.na(as.numeric(prof_trash_wheel$Dumpster)), ]
-
-
+prof_trash_wheel$Trash_Wheel <- "Professor Trash Wheel" 
+prof_trash_wheel$Sports_Balls <- NA
 
 gwynnda_trash_wheel <- read_excel(file_path, sheet = "Gwynnda Trash Wheel", skip = 1)
 colnames(gwynnda_trash_wheel) <- c("Dumpster", "Month", "Year", "Date", "Weight_Tons", 
@@ -137,7 +139,43 @@ colnames(gwynnda_trash_wheel) <- c("Dumpster", "Month", "Year", "Date", "Weight_
                                    "Cigarette_Butts", "Plastic_Bags", "Wrappers", "Homes_Powered")
 gwynnda_trash_wheel <- gwynnda_trash_wheel[, 1:12]
 gwynnda_trash_wheel <- gwynnda_trash_wheel[!is.na(gwynnda_trash_wheel$Dumpster) & !is.na(as.numeric(gwynnda_trash_wheel$Dumpster)), ]
+gwynnda_trash_wheel$Trash_Wheel <- "Gwynnda Trash Wheel" # Adding identifier
+gwynnda_trash_wheel$Glass_Bottles <- NA
+gwynnda_trash_wheel$Sports_Balls <- NA
+
 ```
+
+Combining the three datasets into one
+
+```{r}
+
+combined_trash_data <- rbind(mr_trash_wheel, prof_trash_wheel, gwynnda_trash_wheel)
+num_observations <- nrow(combined_trash_data)
+total_weight_prof_trash <- sum(combined_trash_data$Weight_Tons[combined_trash_data$Trash_Wheel == "Professor Trash Wheel"], na.rm = TRUE)
+
+# Calculating the total number of cigarette butts collected by Gwynnda in June 2022
+total_cigarette_butts_gwynnda <- sum(combined_trash_data$Cigarette_Butts[combined_trash_data$Trash_Wheel == "Gwynnda Trash Wheel" & 
+                                                                         combined_trash_data$Month == "June" & 
+                                                                         combined_trash_data$Year == 2022], na.rm = TRUE)
+
+# Displaying the calculated results
+num_observations
+total_weight_prof_trash
+total_cigarette_butts_gwynnda
+```
+The combined dataset consists of 1,033 observations from three sources: Mr. Trash Wheel, Professor Trash Wheel, and Gwynnda Trash Wheel. 
+key variables:
+
+Weight_Tons: The total weight of trash collected in tons.
+Cigarette_Butts: The number of cigarette butts collected.
+Plastic_Bottles, Polystyrene, Plastic_Bags, Wrappers, and Sports_Balls: Various types of waste materials.
+Glass_Bottles: Recorded for Mr. Trash Wheel and Professor Trash Wheel but not for Gwynnda.
+Homes_Powered: The amount of energy (in terms of homes powered) from the collected waste.
+
+In this dataset, Professor Trash Wheel collected a total of 246.74 tons of trash. Furthermore, Gwynnda Trash Wheel collected 18,120 cigarette butts in June 2022. These variables and measurements provide a detailed view of the efforts to reduce waste in the environment through these trash collection systems.
+
+Problem 3
+
 
 
 
