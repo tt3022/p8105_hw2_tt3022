@@ -3,3 +3,93 @@ title: "p8105_hw2_tt3022"
 output: html_document
 date: "2024-10-02"
 ---
+Load the necessary libraries
+```{r}
+library(dplyr)
+```
+
+Problem 1
+import data
+```{r}
+nyc_data <- read.csv("D:/P8105/p8105_hw2_tt3022/Data/NYC_Transit_Subway_Entrance_And_Exit_Data.csv")
+
+```
+
+
+Cleaning Data
+```{r}
+# Select relevant columns
+nyc_cleaned <- nyc_data[, c("Line", "Station.Name", "Station.Latitude", "Station.Longitude",
+                            "Route1", "Route2", "Route3", "Route4", "Route5", "Route6", "Route7", "Route8", 
+                            "Route9", "Route10", "Route11", "Entry", "Vending", "Entrance.Type", "ADA")]
+
+# Convert 'Entry' from "YES"/"NO" to logical TRUE/FALSE
+nyc_cleaned$Entry <- ifelse(nyc_cleaned$Entry == "YES", TRUE, FALSE)
+```
+
+I need to make  sure that if one station has multiple corner, we need to make sure that "Entry", "Vending", "Entrance.Type", "ADA" has correct status, if one corner has "True" we can show this station is true, and entrance type show the most frequent entrance type
+```{r}
+get_mode <- function(x) {
+  ux <- unique(x)
+  ux[which.max(tabulate(match(x, ux)))]
+}
+
+
+nyc_grouped <- nyc_cleaned %>%
+  group_by(Station.Name, Line) %>%
+  summarise(
+    Station.Latitude = first(Station.Latitude), 
+    Station.Longitude = first(Station.Longitude),
+    Entry = any(Entry),  # TRUE if any entry is TRUE
+    Vending = any(Vending == "YES"),  # TRUE if any vending is available
+    Entrance.Type = get_mode(Entrance.Type),  # Most frequent entrance type
+    ADA = any(ADA == TRUE),  # TRUE if any corner is ADA compliant
+    Route1 = first(Route1), Route2 = first(Route2), Route3 = first(Route3),
+    Route4 = first(Route4), Route5 = first(Route5), Route6 = first(Route6),
+    Route7 = first(Route7), Route8 = first(Route8), Route9 = first(Route9),
+    Route10 = first(Route10), Route11 = first(Route11)
+  )
+
+```
+
+Short Paragraph about the Dataset
+This dataset contains information about subway entrances and exits across various stations in New York City. The dataset consists of variables such as:
+
+Line: The subway line serving the station.
+Station Name: The name of the subway station.
+Station Latitude and Station Longitude: The geographical coordinates of the station.
+Route1 to Route11: Various subway routes serving each station.
+Entry: Whether the entrance allows entry, converted from "YES"/"NO" to logical TRUE/FALSE.
+Vending: Indicates whether a vending machine is available at the entrance.
+Entrance Type: Specifies the type of the entrance.
+ADA: Specifies whether the station is compliant with the Americans with Disabilities Act (ADA).
+
+
+After cleaning, the dataset contains only relevant columns and has had duplicate rows removed. The resulting dataset has [465 x 19] dimensions, indicating the number of unique station entrances. The data is tidy, since I defined the different cases about "Entry", "Vending", "Entrance.Type", "ADA".
+
+
+Answer of the question:
+```{r}
+distinct_stations <- nrow(unique(nyc_grouped[, c("Station.Name", "Line")]))
+distinct_stations
+ada_stations <- nyc_grouped[nyc_grouped$ADA == TRUE, ]
+nrow(ada_stations)
+no_vending_data <- nyc_grouped[nyc_grouped$Vending == FALSE, ]
+prop_entry_no_vending <- sum(no_vending_data$Entry) / nrow(no_vending_data)
+prop_entry_no_vending
+
+
+## Filter the dataset for stations that serve the A train, ensuring we remove NA values
+a_train_stations <- nyc_grouped %>%
+  filter((Route1 == "A" | Route2 == "A" | Route3 == "A" | Route4 == "A" | Route5 == "A" |
+          Route6 == "A" | Route7 == "A" | Route8 == "A" | Route9 == "A" | Route10 == "A" |
+          Route11 == "A") & !is.na(Station.Name) & !is.na(Line))
+distinct_a_stations <- nrow(unique(a_train_stations[, c("Station.Name", "Line")]))
+distinct_a_stations
+ada_a_train_stations <- nrow(a_train_stations[a_train_stations$ADA == TRUE, ])
+ada_a_train_stations
+
+```
+Basic on  the code, we find that we have 465 distinct stations, 84 ADA stations, `r prop_entry_no_vending`  of station entrances / exits without vending allow entrance, 60 route A stations, and 17 stations has APA in route A.
+
+
